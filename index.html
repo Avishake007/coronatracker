@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/f68f8d81ee.js" crossorigin="anonymous"></script>
+
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  -->
+        <style>
+            .first{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .gap{
+                /* margin-left:14px; */
+                padding: 14px;
+            }
+            #tbval{
+                width:100%;
+            }
+            h1{
+                font-size: 1rem;
+            }
+            #btn{
+                cursor: pointer;
+                background: violet;
+            }
+        </style>
+           <title>Coronavirus App</title>
+</head>
+
+<body onload="fetch()">
+    <div class="first">
+    <h1 id="text">CORONAVIRUS TRACKER APP</h1>
+    </div>
+    <div class="table-responsive">
+        <table class="table-boder table-striped text-center" id="tbval">
+            <tr>
+                <th class="gap" >Country</th>
+                <th class="gap">Total Confirmed
+                    <span><button onclick="decrease()" id="btn"><i class="fa fa-arrow-down" aria-hidden="true"></i></button></span>
+                </th>
+                <th class="gap">New Confirmed</th>
+                <th class="gap" style="color: darkgreen;">Total Recovered</th>
+                <th class="gap" style="color:red">Total Deaths</th>
+                <th class="gap" style="color: orange;">New Deaths</th>
+                <th class="gap" style="color: lightgreen;">New Recovered</th>
+                <!-- <th></th> -->
+            </tr>
+        </table>
+    </div>
+    <script>
+        // async function getCovidapi() {
+        //     const jsondata = await fetch('https://api.covid19api.com/summary');
+        //     const jsdata = await jsondata.json();
+        //     console.log(jsdata);
+        // }
+
+        // getCovidapi();
+        function fetch() {
+            $.get("https://api.covid19api.com/summary",
+                function (data) {
+                    var tbval = document.getElementById('tbval');
+                    for(let i=1;i<data['Countries'].length;i++)
+                    {
+                        for(let j=0;j<data['Countries'].length-i;j++)
+                        {
+                            if(data['Countries'][j]['TotalConfirmed']>data['Countries'][j+1]['TotalConfirmed'])
+                            {
+                                let t=data['Countries'][j];
+                                data['Countries'][j]=data['Countries'][j+1];
+                                data['Countries'][j+1]=t;
+                            }
+                        }
+                    }
+
+                    for (var i = 1; i < (data['Countries'].length); i++) {
+                        var x = tbval.insertRow();
+                        x.insertCell(0);
+                        tbval.rows[i].cells[0].innerHTML = data['Countries'][i - 1]['Country'];
+                        tbval.rows[i].cells[0].style.background = "red";
+                        tbval.rows[i].cells[0].style.color = "#fff";
+                        tbval.rows[i].cells[0].style.border = "2px solid black";
+
+                        x.insertCell(1);
+                        tbval.rows[i].cells[1].innerHTML = data['Countries'][i - 1]['TotalConfirmed'];
+                        tbval.rows[i].cells[1].style.background = "lightsalmon";
+                        tbval.rows[i].cells[1].style.border = "2px solid black";
+                        
+                        x.insertCell(2);
+                        tbval.rows[i].cells[2].innerHTML = data['Countries'][i - 1]['NewConfirmed'];
+                        tbval.rows[i].cells[2].style.background = "wheat";
+                        tbval.rows[i].cells[2].style.border = "2px solid black";
+
+                        x.insertCell(3);
+                        tbval.rows[i].cells[3].innerHTML = data['Countries'][i - 1]['TotalRecovered'];
+                        tbval.rows[i].cells[3].style.background = "lightgreen";
+                        tbval.rows[i].cells[3].style.border = "2px solid black";
+
+                        x.insertCell(4);
+                        tbval.rows[i].cells[4].innerHTML = data['Countries'][i - 1]['TotalDeaths'];
+                        tbval.rows[i].cells[4].style.background = "lightgrey";
+                        tbval.rows[i].cells[4].style.border = "2px solid black";
+
+                        x.insertCell(5);
+                        tbval.rows[i].cells[5].innerHTML = data['Countries'][i - 1]['NewDeaths'];
+                        tbval.rows[i].cells[5].style.background = "lightblue";
+                        tbval.rows[i].cells[5].style.border = "2px solid black";
+
+
+                        x.insertCell(6);
+                        tbval.rows[i].cells[6].innerHTML = data['Countries'][i - 1]['NewConfirmed'];
+                        tbval.rows[i].cells[6].style.background = "yellow";
+                        tbval.rows[i].cells[6].style.border = "2px solid black";
+
+
+
+
+
+                    }
+
+                }
+            );
+    }
+    function decrease() {
+        let y=document.getElementById('btn');
+        y.style.display="none";
+            $.get("https://api.covid19api.com/summary",
+                function (data) {
+                    var tbval = document.getElementById('tbval');
+                    for(let i=1;i<data['Countries'].length;i++)
+                    {
+                        for(let j=0;j<data['Countries'].length-i;j++)
+                        {
+                            if(data['Countries'][j]['TotalConfirmed']<data['Countries'][j+1]['TotalConfirmed'])
+                            {
+                                let t=data['Countries'][j];
+                                data['Countries'][j]=data['Countries'][j+1];
+                                data['Countries'][j+1]=t;
+                            }
+                        }
+                    }
+
+                    for (var i = 1; i < (data['Countries'].length); i++) {
+                        var x = tbval.insertRow();
+                        x.insertCell(0);
+                        tbval.rows[i].cells[0].innerHTML = data['Countries'][i - 1]['Country'];
+                        tbval.rows[i].cells[0].style.background = "red";
+                        tbval.rows[i].cells[0].style.color = "#fff";
+                        tbval.rows[i].cells[0].style.border = "2px solid black";
+
+                        x.insertCell(1);
+                        tbval.rows[i].cells[1].innerHTML = data['Countries'][i - 1]['TotalConfirmed'];
+                        tbval.rows[i].cells[1].style.background = "lightsalmon";
+                        tbval.rows[i].cells[1].style.border = "2px solid black";
+                        
+                        x.insertCell(2);
+                        tbval.rows[i].cells[2].innerHTML = data['Countries'][i - 1]['NewConfirmed'];
+                        tbval.rows[i].cells[2].style.background = "wheat";
+                        tbval.rows[i].cells[2].style.border = "2px solid black";
+
+                        x.insertCell(3);
+                        tbval.rows[i].cells[3].innerHTML = data['Countries'][i - 1]['TotalRecovered'];
+                        tbval.rows[i].cells[3].style.background = "lightgreen";
+                        tbval.rows[i].cells[3].style.border = "2px solid black";
+
+                        x.insertCell(4);
+                        tbval.rows[i].cells[4].innerHTML = data['Countries'][i - 1]['TotalDeaths'];
+                        tbval.rows[i].cells[4].style.background = "lightgrey";
+                        tbval.rows[i].cells[4].style.border = "2px solid black";
+
+                        x.insertCell(5);
+                        tbval.rows[i].cells[5].innerHTML = data['Countries'][i - 1]['NewDeaths'];
+                        tbval.rows[i].cells[5].style.background = "lightblue";
+                        tbval.rows[i].cells[5].style.border = "2px solid black";
+
+
+                        x.insertCell(6);
+                        tbval.rows[i].cells[6].innerHTML = data['Countries'][i - 1]['NewConfirmed'];
+                        tbval.rows[i].cells[6].style.background = "yellow";
+                        tbval.rows[i].cells[6].style.border = "2px solid black";
+
+
+
+
+
+                    }
+
+                }
+            );
+    }
+    </script>
+</body>
+
+</html>
